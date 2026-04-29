@@ -55,10 +55,21 @@ to confirm it installs, compiles, lints, and passes tests.
    Cluster failures by root cause. 47 "Cannot find name 'foo'" errors
    are one missing import, not 47 separate issues.
 
-4. **If all checks pass:** verification is done. Surface the project and
-   any accumulated notes to the user.
+4. **Check that tests actually exist.** A test command that exits 0
+   because no tests were found is NOT a pass. Look for:
+   - Rust: "0 tests" or "running 0 tests" in output
+   - Python: "no tests ran" or "0 items collected" in output
+   - Node: no test script in package.json, or "0 tests" in output
+   - Go: "[no test files]" in output
 
-5. **If checks fail:** produce a failure report for the triage step.
+   If the project has no tests, report the test check as **fail** with
+   message "no tests found". The bootstrap assumes tests will be
+   generated — a project with zero tests is incomplete.
+
+5. **If all checks pass (including real tests):** verification is done.
+   Surface the project and any accumulated notes to the user.
+
+6. **If checks fail:** produce a failure report for the triage step.
    The report should contain:
    - stack detected
    - each check's status
