@@ -75,27 +75,15 @@ scheduler granularity).
 
 ### Iteration 1
 
-Harness report (abridged):
+Verification report (abridged):
 
-```json
-{
-  "stack": "typescript-node",
-  "checks": [
-    {"name": "install", "status": "pass", "duration_ms": 8400},
-    {"name": "typecheck", "status": "fail", "duration_ms": 3200,
-     "failures": [
-       {"file": "src/digest/build.ts", "line": 47, "code": "TS2322",
-        "message": "Type 'PullRequestSummary[]' is not assignable to type 'never[]'."},
-       {"file": "src/digest/build.ts", "line": 48, "code": "TS2322",
-        "message": "Type 'MergedPullRequestSummary[]' is not assignable to type 'never[]'.  [×3 occurrences]"}
-     ]},
-    {"name": "lint", "status": "skipped", "reason": "blocked by upstream failure"},
-    {"name": "build", "status": "skipped", "reason": "blocked by upstream failure"},
-    {"name": "test", "status": "skipped", "reason": "blocked by upstream failure"}
-  ],
-  "all_passed": false
-}
-```
+- install: pass
+- typecheck: **fail**
+  - `src/digest/build.ts:47` — TS2322: Type 'PullRequestSummary[]' is not assignable to type 'never[]'.
+  - `src/digest/build.ts:48` — TS2322: Type 'MergedPullRequestSummary[]' is not assignable to type 'never[]'. (x3 occurrences)
+- lint: skipped (blocked by upstream failure)
+- build: skipped (blocked by upstream failure)
+- test: skipped (blocked by upstream failure)
 
 Triage output:
 
@@ -118,8 +106,8 @@ CONTRACT IMPACT: NONE.
 
 ### Iteration 2
 
-Harness re-run: all checks pass. (No tests in the project — `npm test
---if-present` succeeds silently when no test script exists.)
+Verification re-run: all checks pass. (No tests in the project — no
+test script in package.json, so the test check was skipped.)
 
 Loop converged in 2 iterations, well within the 5-iteration cap.
 

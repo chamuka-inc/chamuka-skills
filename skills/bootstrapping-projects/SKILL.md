@@ -14,7 +14,7 @@ four-stage pipeline: bootstrap → expand → verify → revise.
 |-------|------------|-------|--------|:----------------:|
 | 1. Bootstrap | `prompts/bootstrap.md` | User description | Contract (assumptions, tree, manifest, data model, README, representative files, configs) | Yes — review before expand |
 | 2. Expand | `prompts/expand.md` | Bootstrap output + target file list | Full project files + NOTES/FLAGS | No |
-| 3. Verify | `scripts/harness.py` + `prompts/triage.md` | Project on disk | JSON failure report → triage → revise loop (max 5 iterations) | Yes — review verified project |
+| 3. Verify | `prompts/verify.md` + `prompts/triage.md` | Project on disk | Failure report → triage → revise loop (max 5 iterations) | Yes — review verified project |
 | 4. Revise | `prompts/revise.md` | Bootstrap + project + change request | File diffs + CONTRACT IMPACT | No (re-runs verify) |
 
 ## When to use this skill
@@ -55,7 +55,7 @@ contents before running that stage** — do not run a stage from memory.
    first. Treats the bootstrap as immutable. Emits `## NOTES` for
    compromises and observations, `## FLAGS` only for true blockers.
 
-3. **Verify** (`scripts/harness.py` + `prompts/triage.md`) — Project →
+3. **Verify** (`prompts/verify.md` + `prompts/triage.md`) — Project →
    verified project. Runs install, typecheck, lint, build, test against the
    project on disk. Failures get triaged into a change request and routed
    through the reviser. Loops until green, stuck, or capped.
@@ -102,20 +102,20 @@ bounded recovery.
 
 ### Stage 3 — Verify
 
-1. Run `python scripts/harness.py <project-root>`. The harness detects the
-   stack from the manifest, runs install/typecheck/lint/build/test in
-   order, and emits a JSON failure report.
-2. If `all_passed: true`: stage 3 done. Surface project + accumulated
+1. Read `prompts/verify.md`. Run the verification checks against the
+   project on disk as described — detect the stack, run checks in order,
+   stop on first failure, cluster errors by root cause.
+2. If all checks pass: stage 3 done. Surface project + accumulated
    notes to the user.
 3. If checks fail: enter the verify loop.
    - Read `prompts/triage.md`.
-   - Render with `{{HARNESS_REPORT}}` and `{{BOOTSTRAP}}`.
+   - Render with `{{FAILURE_REPORT}}` and `{{BOOTSTRAP}}`.
    - Triage produces one of: `## REQUEST` + `## SCOPE` (run reviser),
      `## CONTRACT FIX NEEDED` (escalate to user), `## CANNOT FIX` (halt).
    - On REQUEST: read `prompts/revise.md`, render with the bootstrap,
      current project state, the request, and the scope. Apply the diff
      to disk.
-   - Re-run the harness. Compare reports.
+   - Re-run verification. Compare reports.
 4. Loop bounds (enforce strictly):
    - Max 5 iterations.
    - No-progress: same failure set two iterations in a row → halt.
@@ -144,7 +144,7 @@ After the user has a verified project, they may request changes.
 | `{{DESCRIPTION}}` | `bootstrap.md` | The user's natural-language project description |
 | `{{BOOTSTRAP_OUTPUT}}` | `expand.md` | Full bootstrap output + any files from earlier expand batches |
 | `{{TARGETS_OR_EMPTY}}` | `expand.md` | File paths to generate in this batch (empty = all remaining) |
-| `{{HARNESS_REPORT}}` | `triage.md` | JSON failure report from `harness.py` |
+| `{{FAILURE_REPORT}}` | `triage.md` | Failure report from the verify step |
 | `{{BOOTSTRAP}}` | `triage.md`, `revise.md` | The original bootstrap contract |
 | `{{PROJECT}}` | `revise.md` | Current state of all project files |
 | `{{REQUEST}}` | `revise.md` | Change request (from triage or user) |
@@ -174,7 +174,7 @@ After the user has a verified project, they may request changes.
   than continuing to revise).
 - **Revise returns FLAGS**: ambiguity in the request. Pass the
   clarification question to the user.
-- **Triage returns CANNOT FIX**: the harness is hitting an environment
+- **Triage returns CANNOT FIX**: verification is hitting an environment
   issue (network, real DB, real auth). Note it and proceed without that
   check.
 
@@ -191,17 +191,16 @@ After the user has a verified project, they may request changes.
 
 ## Stack support
 
-The harness supports these stacks out of the box:
+The verify step has built-in instructions for these stacks:
 
 - TypeScript / Node (npm, detected from `package.json` + `tsconfig.json`)
 - JavaScript / Node (npm, detected from `package.json` without TS config)
-- Python (uv preferred, falls back to pip)
+- Python (uv preferred, falls back to pip + venv)
 - Rust (cargo)
 - Go (go modules)
 
-For other stacks, the harness emits `stack: unknown` and the verify stage
-skips. Bootstrap and expand still work; the user runs their own
-verification.
+For other stacks, skip automated verification and let the user verify
+manually. Bootstrap and expand work for any stack.
 
 ## Examples
 
