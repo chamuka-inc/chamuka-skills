@@ -12,10 +12,10 @@ four-stage pipeline: bootstrap → expand → verify → revise.
 
 | Stage | Prompt file | Input | Output | Human checkpoint |
 |-------|------------|-------|--------|:----------------:|
-| 1. Bootstrap | `prompts/bootstrap.md` | User description | Contract (assumptions, tree, manifest, data model, README, representative files, configs) | Yes — review before expand |
-| 2. Expand | `prompts/expand.md` | Bootstrap output + target file list | Full project files + NOTES/FLAGS | No |
-| 3. Verify | `prompts/verify.md` + `prompts/triage.md` | Project on disk | Failure report → triage → revise loop (max 5 iterations) | Yes — review verified project |
-| 4. Revise | `prompts/revise.md` | Bootstrap + project + change request | File diffs + CONTRACT IMPACT | No (re-runs verify) |
+| 1. Bootstrap | `assets/bootstrap.md` | User description | Contract (assumptions, tree, manifest, data model, README, representative files, configs) | Yes — review before expand |
+| 2. Expand | `assets/expand.md` | Bootstrap output + target file list | Full project files + NOTES/FLAGS | No |
+| 3. Verify | `assets/verify.md` + `assets/triage.md` | Project on disk | Failure report → triage → revise loop (max 5 iterations) | Yes — review verified project |
+| 4. Revise | `assets/revise.md` | Bootstrap + project + change request | File diffs + CONTRACT IMPACT | No (re-runs verify) |
 
 ## When to use this skill
 
@@ -42,25 +42,25 @@ Do NOT use this skill for:
 
 ## The four stages
 
-Each stage has a dedicated prompt in `prompts/`. **Read the relevant prompt's
+Each stage has a dedicated prompt in `assets/`. **Read the relevant prompt's
 contents before running that stage** — do not run a stage from memory.
 
-1. **Bootstrap** (`prompts/bootstrap.md`) — Description → contract.
+1. **Bootstrap** (`assets/bootstrap.md`) — Description → contract.
    Produces assumptions, file tree, dependency manifest, data model, README,
    one or two representative files, key configs. The contract is small
    enough for a human to review in five minutes.
 
-2. **Expand** (`prompts/expand.md`) — Contract → full project.
+2. **Expand** (`assets/expand.md`) — Contract → full project.
    Generates every remaining file in the tree, in dependency order, leaves
    first. Treats the bootstrap as immutable. Emits `## NOTES` for
    compromises and observations, `## FLAGS` only for true blockers.
 
-3. **Verify** (`prompts/verify.md` + `prompts/triage.md`) — Project →
+3. **Verify** (`assets/verify.md` + `assets/triage.md`) — Project →
    verified project. Runs install, typecheck, lint, build, test against the
    project on disk. Failures get triaged into a change request and routed
    through the reviser. Loops until green, stuck, or capped.
 
-4. **Revise** (`prompts/revise.md`) — Project + change request → diff.
+4. **Revise** (`assets/revise.md`) — Project + change request → diff.
    Used both by the verify loop (driven by triage output) and by the user
    for post-generation changes. Whole-file replacement, not patches.
    Surfaces `CONTRACT IMPACT` when a change requires updating the bootstrap.
@@ -73,7 +73,7 @@ bounded recovery.
 
 ### Stage 1 — Bootstrap
 
-1. Read `prompts/bootstrap.md`.
+1. Read `assets/bootstrap.md`.
 2. Render the prompt with the user's description in `{{DESCRIPTION}}`.
 3. Produce the bootstrap output. Show it to the user.
 4. Wait for approval. If the user requests changes to assumptions or the
@@ -82,7 +82,7 @@ bounded recovery.
 
 ### Stage 2 — Expand
 
-1. Read `prompts/expand.md`.
+1. Read `assets/expand.md`.
 2. Compute the target file list: every file in the tree minus what
    bootstrap already produced (representative files, manifest, schema,
    README, configs in section 8).
@@ -102,17 +102,17 @@ bounded recovery.
 
 ### Stage 3 — Verify
 
-1. Read `prompts/verify.md`. Run the verification checks against the
+1. Read `assets/verify.md`. Run the verification checks against the
    project on disk as described — detect the stack, run checks in order,
    stop on first failure, cluster errors by root cause.
 2. If all checks pass: stage 3 done. Surface project + accumulated
    notes to the user.
 3. If checks fail: enter the verify loop.
-   - Read `prompts/triage.md`.
+   - Read `assets/triage.md`.
    - Render with `{{FAILURE_REPORT}}` and `{{BOOTSTRAP}}`.
    - Triage produces one of: `## REQUEST` + `## SCOPE` (run reviser),
      `## CONTRACT FIX NEEDED` (escalate to user), `## CANNOT FIX` (halt).
-   - On REQUEST: read `prompts/revise.md`, render with the bootstrap,
+   - On REQUEST: read `assets/revise.md`, render with the bootstrap,
      current project state, the request, and the scope. Apply the diff
      to disk.
    - Re-run verification. Compare reports.
@@ -129,7 +129,7 @@ bounded recovery.
 
 After the user has a verified project, they may request changes.
 
-1. Read `prompts/revise.md`.
+1. Read `assets/revise.md`.
 2. Render with the bootstrap, the full current project, the user's
    request. Do not pass a SCOPE — the user-driven path lets the reviser
    pick scope based on the request.
@@ -204,7 +204,7 @@ manually. Bootstrap and expand work for any stack.
 
 ## Examples
 
-See `examples/standup-bot.md` for a worked end-to-end run: a Slack bot for
+See `references/standup-bot.md` for a worked end-to-end run: a Slack bot for
 GitHub digests, from description to verified project. Read it before the
 first generation in a session — it calibrates the level of detail the
 bootstrap and expand stages should produce.

@@ -10,9 +10,9 @@ claude plugin add chamuka-inc/chamuka-skills
 
 ## Skills
 
-Skills live in `skills/<skill-name>/`. Each skill contains a `SKILL.md` with YAML frontmatter and markdown instructions.
+Skills live in `skills/<skill-name>/`. Each skill contains a `SKILL.md` with YAML frontmatter and markdown instructions, conforming to the [Agent Skills specification](https://agentskills.io/specification).
 
-No skills yet — this repo is freshly scaffolded.
+- **bootstrapping-projects** — scaffold a working project from a natural-language description via a four-stage pipeline
 
 ## Authoring
 

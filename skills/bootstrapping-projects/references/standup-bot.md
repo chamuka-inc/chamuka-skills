@@ -48,17 +48,18 @@ The bootstrap produced ~350 lines covering:
 
 ## Stage 2 — Expand
 
-Targets after subtracting bootstrap output: 13 files. Single batch was
-fine (under the 10-file batching threshold the SKILL.md mentions, but
-13 is close — borderline acceptable for a single call, would split to
-two batches if any file were larger).
+Targets after subtracting bootstrap output: 13 files. Split into two
+batches since the list exceeded the ~10-file batching threshold.
 
-Generation order followed leaves-first:
+**Batch 1** (8 files — leaves, utilities, configs):
 
 1. `src/types.ts` — pure types, no internal imports.
 2. `src/logger.ts`, `src/config.ts`, `tsconfig.json`, `drizzle.config.ts`,
    `.gitignore`, `drizzle/.gitkeep` — utilities and configs.
 3. `src/db/client.ts` — depends on config and schema.
+
+**Batch 2** (5 files — domain, interface, entry points; batch 1 passed as context):
+
 4. `src/github/client.ts`, `src/github/queries.ts` — domain.
 5. `src/slack/format.ts`, `src/digest/build.ts`, `src/digest/schedule.ts`,
    `src/slack/commands.ts` — interface + domain.
