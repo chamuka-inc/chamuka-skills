@@ -9,7 +9,7 @@ A Claude Code plugin of reusable agent skills: techniques, patterns, and referen
 ## Install
 
 ```
-claude plugin add chamuka-inc/chamuka-skills
+claude plugin add chamuka-labs/chamuka-skills
 ```
 
 ## Skills
