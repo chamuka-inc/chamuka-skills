@@ -1,5 +1,7 @@
 # chamuka-skills
 
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
 A Claude Code plugin of reusable agent skills — techniques, patterns, and reference guides.
 
 ## Install
@@ -20,4 +22,4 @@ See [CLAUDE.md](CLAUDE.md) for the complete skill authoring reference — frontm
 
 ## License
 
-MIT
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).

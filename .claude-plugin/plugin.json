@@ -1,13 +1,13 @@
 {
   "name": "chamuka-skills",
-  "description": "Agent skills collection — reusable techniques, patterns, and reference guides for Claude Code",
+  "description": "Agent skills collection \u2014 reusable techniques, patterns, and reference guides for Claude Code",
   "version": "0.1.0",
   "author": {
     "name": "chamuka-inc"
   },
   "homepage": "https://github.com/chamuka-inc/chamuka-skills",
   "repository": "https://github.com/chamuka-inc/chamuka-skills",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "keywords": [
     "skills",
     "agent",
