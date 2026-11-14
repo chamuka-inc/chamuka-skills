@@ -1,8 +1,10 @@
-# chamuka-skills
+# Chamuka Skills
 
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-A Claude Code plugin of reusable agent skills — techniques, patterns, and reference guides.
+Reusable skills and reference guides for coding agents.
+
+A Claude Code plugin of reusable agent skills: techniques, patterns, and reference guides.
 
 ## Install
 
@@ -20,6 +22,18 @@ Skills live in `skills/<skill-name>/`. Each skill contains a `SKILL.md` with YAM
 
 See [CLAUDE.md](CLAUDE.md) for the complete skill authoring reference — frontmatter format, writing principles, common mistakes, and when (not) to create a skill.
 
+## Contributing
+
+Issues and pull requests are welcome.
+
+## Security
+
+Report vulnerabilities to [security@chamuka.ai](mailto:security@chamuka.ai).
+
 ## License
 
 Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+
+---
+
+Part of [Chamuka Labs](https://chamuka.ai), an applied AI lab.
